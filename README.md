@@ -18,8 +18,7 @@ This Anki add-on allows users to quickly report cards with incorrect tags to a c
 1. Open Anki
 2. Go to Tools → Add-ons
 3. Click "Get Add-ons..."
-4. Enter the add-on code: `YOUR_ADDON_CODE_HERE` (you'll get this after publishing)
-5. Click "OK"
+4. Enter the add-on code: `547965285`
 6. Restart Anki
 7. Follow the first-run setup instructions
 
