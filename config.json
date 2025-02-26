@@ -1,0 +1,10 @@
+{
+    "google_form_url": "",
+    "hotkey": "Ctrl+Shift+R",
+    "form_fields": {
+        "deck_name": "",
+        "tags": "",
+        "note_id": ""
+    },
+    "first_run": true
+}
