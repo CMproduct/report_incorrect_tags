@@ -83,6 +83,7 @@ def first_run_setup():
     showInfo("""
     <h1>Setup Complete!</h1>
     <p>You can now report cards with incorrect tags by pressing {}</p>
+    <p>On macOS, use Command+Shift+R instead of Ctrl+Shift+R.</p>
     <p>You can change these settings anytime through Tools → Add-ons → Report Incorrect Tags → Config</p>
     """.format(config["hotkey"]))
 
