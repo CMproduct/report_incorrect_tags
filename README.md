@@ -71,6 +71,12 @@ This add-on is perfect for:
 
 It allows your students or users to easily report tagging errors, helping you improve your deck quality over time.
 
+## Changelog
+## v1.1
+- Auto-populated Google Form: Now generates pre-filled links using entry IDs so that card details are automatically filled in.
+- Improved Field Mapping Handling: Enhanced mapping between Anki card fields and Google Form entries.
+- Minor bug fixes and performance improvements.
+
 ## Support
 
 If you encounter any issues or have questions, please:
