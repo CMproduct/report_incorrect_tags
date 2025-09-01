@@ -13,6 +13,7 @@ import json
 # PyQt6 compatibility aliases
 HCenter = Qt.AlignmentFlag.AlignHCenter
 Smooth = Qt.TransformationMode.SmoothTransformation
+Rich = Qt.TextFormat.RichText
 
 # Get the add-on directory
 addon_dir = os.path.dirname(os.path.realpath(__file__))
@@ -101,7 +102,7 @@ def first_run_setup():
         "<li>Configurable hotkey (default: Ctrl+Shift+R)</li>"
         "</ul>"
     )
-    bullets.setTextFormat(Qt.RichText)
+    bullets.setTextFormat(Rich)
     bullets.setWordWrap(True)
     v.addWidget(bullets)
 
