@@ -10,6 +10,10 @@ import urllib.parse
 import os
 import json
 
+# PyQt6 compatibility aliases
+HCenter = Qt.AlignmentFlag.AlignHCenter
+Smooth = Qt.TransformationMode.SmoothTransformation
+
 # Get the add-on directory
 addon_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.join(addon_dir, "config.json")
@@ -73,19 +77,19 @@ def first_run_setup():
     logo = QLabel()
     pix = QPixmap(os.path.join(addon_dir, "sinai_logo.png"))
     if not pix.isNull():
-        logo.setPixmap(pix.scaledToHeight(40, Qt.SmoothTransformation))
-        logo.setAlignment(Qt.AlignHCenter)
+        logo.setPixmap(pix.scaledToHeight(40, Smooth))
+        logo.setAlignment(HCenter)
         v.addWidget(logo)
 
     # Title
     title = QLabel("Thank you for installing <b>Report Incorrect Tags</b>")
-    title.setAlignment(Qt.AlignHCenter)
+    title.setAlignment(HCenter)
     title.setStyleSheet("font-size:18px; margin-top:8px;")
     v.addWidget(title)
 
     # Subtitle
     subtitle = QLabel("Quickly send tag fixes to a Google Form with one hotkey.")
-    subtitle.setAlignment(Qt.AlignHCenter)
+    subtitle.setAlignment(HCenter)
     subtitle.setStyleSheet("color: palette(mid); margin-bottom:8px;")
     v.addWidget(subtitle)
 
@@ -124,9 +128,9 @@ def first_run_setup():
         adv_inputs[key] = w
     v.addWidget(advanced_box)
 
-def toggle_advanced(checked: bool):
-    # PyQt sends a bool already; Python uses 'not', not '!'
-    advanced_box.setEnabled(not checked)
+    def toggle_advanced(checked: bool):
+        # PyQt sends a bool already; Python uses 'not', not '!'
+        advanced_box.setEnabled(not checked)
 
     sinai_check.toggled.connect(toggle_advanced)
     toggle_advanced(sinai_check.isChecked())
