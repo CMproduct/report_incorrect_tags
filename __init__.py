@@ -92,11 +92,21 @@ def first_run_setup():
     footer_layout.addWidget(footer_label)
     footer_layout.setContentsMargins(0, 0, 10, 5)
 
-    # Action button
+    # Action button (PyQt5/6 compatible)
     button_box = QDialogButtonBox()
-    start_button = button_box.addButton("Get Started", QDialogButtonBox.AcceptRole)
-    start_button.setStyleSheet("padding: 5px 15px; background-color: #007bff; color: white; border-radius: 5px; font-weight: bold;")
+
+    # Compatibility shim for enum location (PyQt6 vs PyQt5)
+    try:
+        accept_role = QDialogButtonBox.ButtonRole.AcceptRole   # PyQt6
+    except AttributeError:
+        accept_role = QDialogButtonBox.AcceptRole              # PyQt5-style
+
+    start_button = button_box.addButton("Get Started", accept_role)
+    start_button.setStyleSheet(
+        "padding: 5px 15px; background-color: #007bff; color: white; border-radius: 5px; font-weight: bold;"
+    )
     button_box.accepted.connect(dialog.accept)
+
 
     # Add widgets to layout
     vbox.addWidget(label)
