@@ -64,12 +64,48 @@ def first_run_setup():
     if not config.get("first_run", True):
         return
 
-    # Welcome message
-    showInfo("""
-    <h1>Thank you for installing the Report Incorrect Tags Add-on! (a CMproduction)</h1>
-    <p>This add-on allows you to quickly report cards with incorrect tags to a Google Form.</p>
-    <p>Let's set up your Google Form URL and field mappings.</p>
-    """)
+    # Create a custom dialog for the welcome message
+    dialog = QDialog(mw)
+    dialog.setWindowTitle("Welcome to Report Incorrect Tags")
+    dialog.setMinimumWidth(450)
+
+    # Main layout
+    vbox = QVBoxLayout()
+    dialog.setLayout(vbox)
+
+    # HTML content for the body
+    content_html = """
+    <div style="font-family: -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 10px; text-align: left;">
+        <h1 style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">Welcome to Report Incorrect Tags</h1>
+        <p style="font-size: 15px; color: #555; margin-top: 0; margin-bottom: 15px;">An Add-on from Mount Sinai</p>
+        <p style="font-size: 13px; margin-bottom: 20px;">This tool helps you quickly report cards with incorrect tags directly to a Google Form. To get started, let's connect your form.</p>
+    </div>
+    """
+    label = QLabel(content_html)
+    label.setWordWrap(True)
+    label.setOpenExternalLinks(False)
+
+    # Footer credit
+    footer_layout = QHBoxLayout()
+    footer_label = QLabel('<small style="font-size: 9px; color: #999999;">Created by CMproduct</small>')
+    footer_layout.addStretch(1)
+    footer_layout.addWidget(footer_label)
+    footer_layout.setContentsMargins(0, 0, 10, 5)
+
+    # Action button
+    button_box = QDialogButtonBox()
+    start_button = button_box.addButton("Get Started", QDialogButtonBox.AcceptRole)
+    start_button.setStyleSheet("padding: 5px 15px; background-color: #007bff; color: white; border-radius: 5px; font-weight: bold;")
+    button_box.accepted.connect(dialog.accept)
+
+    # Add widgets to layout
+    vbox.addWidget(label)
+    vbox.addLayout(footer_layout)
+    vbox.addWidget(button_box)
+
+    # If the user closes the dialog, do not proceed with the setup
+    if not dialog.exec_():
+        return
 
     # Ask if user is from Mount Sinai
     is_mount_sinai = askUser("Are you from Mount Sinai institution?")
