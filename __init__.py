@@ -10,6 +10,28 @@ import urllib.parse
 import os
 import json
 
+# --- PyQt5/6 compatibility aliases (Windows + macOS) ---
+try:
+    # PyQt6 locations
+    ButtonRole = QDialogButtonBox.ButtonRole
+    StandardButton = QDialogButtonBox.StandardButton
+    AlignHCenter = Qt.AlignmentFlag.AlignHCenter
+    Smooth = Qt.TransformationMode.SmoothTransformation
+    RichText = Qt.TextFormat.RichText
+
+    def dialog_exec(dlg):
+        return dlg.exec()
+except AttributeError:
+    # PyQt5 fallbacks
+    ButtonRole = QDialogButtonBox
+    StandardButton = QDialogButtonBox
+    AlignHCenter = Qt.AlignHCenter
+    Smooth = Qt.SmoothTransformation
+    RichText = Qt.RichText
+
+    def dialog_exec(dlg):
+        return dlg.exec_()
+
 # Get the add-on directory
 addon_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.join(addon_dir, "config.json")
@@ -57,6 +79,14 @@ def save_config(config):
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=4)
 
+def _dialog_exec(dlg):
+    """PyQt5/6 compatible exec for QDialog."""
+    try:
+        return dlg.exec()      # PyQt6
+    except AttributeError:
+        return dlg.exec_()     # PyQt5
+
+
 config = load_config()
 
 def first_run_setup():
@@ -82,8 +112,10 @@ def first_run_setup():
     </div>
     """
     label = QLabel(content_html)
+    label.setTextFormat(RichText)  # PyQt6-friendly explicit HTML
     label.setWordWrap(True)
     label.setOpenExternalLinks(False)
+
 
     # Footer credit
     footer_layout = QHBoxLayout()
@@ -114,8 +146,9 @@ def first_run_setup():
     vbox.addWidget(button_box)
 
     # If the user closes the dialog, do not proceed with the setup
-    if not dialog.exec_():
+    if not _dialog_exec(dialog):
         return
+
 
     # Ask if user is from Mount Sinai
     is_mount_sinai = askUser("Are you from Mount Sinai institution?")
@@ -324,13 +357,19 @@ def config_dialog():
     layout.addWidget(help_label)
 
     # Buttons
-    button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+    try:
+        Std = QDialogButtonBox.StandardButton  # PyQt6
+    except AttributeError:
+        Std = QDialogButtonBox                 # PyQt5-compatible alias
+
+    button_box = QDialogButtonBox(Std.Ok | Std.Cancel)
     button_box.accepted.connect(dialog.accept)
     button_box.rejected.connect(dialog.reject)
     layout.addWidget(button_box)
 
+
     # Show dialog
-    if dialog.exec_():
+    if _dialog_exec(dialog):
         # Save settings
         config["google_form_url"] = url_input.text()
         config["hotkey"] = hotkey_input.text()
