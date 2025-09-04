@@ -1,5 +1,6 @@
 # Report Incorrect Tags Add-on for Anki
 # Version: 1.1
+# Author: Caleb Massimi
 # License: GNU GPL v3
 
 from aqt import mw
