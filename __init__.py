@@ -1,5 +1,6 @@
 # Report Incorrect Tags Add-on for Anki
 # Version: 1.1
+# Author: Caleb Massimi
 # License: GNU GPL v3
 
 from aqt import mw
@@ -9,6 +10,28 @@ from anki.hooks import addHook
 import urllib.parse
 import os
 import json
+
+# --- PyQt5/6 compatibility aliases (Windows + macOS) ---
+try:
+    # PyQt6 locations
+    ButtonRole = QDialogButtonBox.ButtonRole
+    StandardButton = QDialogButtonBox.StandardButton
+    AlignHCenter = Qt.AlignmentFlag.AlignHCenter
+    Smooth = Qt.TransformationMode.SmoothTransformation
+    RichText = Qt.TextFormat.RichText
+
+    def dialog_exec(dlg):
+        return dlg.exec()
+except AttributeError:
+    # PyQt5 fallbacks
+    ButtonRole = QDialogButtonBox
+    StandardButton = QDialogButtonBox
+    AlignHCenter = Qt.AlignHCenter
+    Smooth = Qt.SmoothTransformation
+    RichText = Qt.RichText
+
+    def dialog_exec(dlg):
+        return dlg.exec_()
 
 # Get the add-on directory
 addon_dir = os.path.dirname(os.path.realpath(__file__))
@@ -57,6 +80,14 @@ def save_config(config):
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=4)
 
+def _dialog_exec(dlg):
+    """PyQt5/6 compatible exec for QDialog."""
+    try:
+        return dlg.exec()      # PyQt6
+    except AttributeError:
+        return dlg.exec_()     # PyQt5
+
+
 config = load_config()
 
 def first_run_setup():
@@ -64,12 +95,61 @@ def first_run_setup():
     if not config.get("first_run", True):
         return
 
-    # Welcome message
-    showInfo("""
-    <h1>Thank you for installing the Report Incorrect Tags Add-on! (a CMproduction)</h1>
-    <p>This add-on allows you to quickly report cards with incorrect tags to a Google Form.</p>
-    <p>Let's set up your Google Form URL and field mappings.</p>
-    """)
+    # Create a custom dialog for the welcome message
+    dialog = QDialog(mw)
+    dialog.setWindowTitle("Welcome to Report Incorrect Tags")
+    dialog.setMinimumWidth(450)
+
+    # Main layout
+    vbox = QVBoxLayout()
+    dialog.setLayout(vbox)
+
+    # HTML content for the body
+    content_html = """
+    <div style="font-family: -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 10px; text-align: left;">
+        <h1 style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">Welcome to Report Incorrect Tags</h1>
+        <p style="font-size: 15px; color: #555; margin-top: 0; margin-bottom: 15px;">An Add-on from Mount Sinai</p>
+        <p style="font-size: 13px; margin-bottom: 20px;">This tool helps you quickly report cards with incorrect tags directly to a Google Form. To get started, let's connect your form.</p>
+    </div>
+    """
+    label = QLabel(content_html)
+    label.setTextFormat(RichText)  # PyQt6-friendly explicit HTML
+    label.setWordWrap(True)
+    label.setOpenExternalLinks(False)
+
+
+    # Footer credit
+    footer_layout = QHBoxLayout()
+    footer_label = QLabel('<small style="font-size: 9px; color: #999999;">Created by CMproduct</small>')
+    footer_layout.addStretch(1)
+    footer_layout.addWidget(footer_label)
+    footer_layout.setContentsMargins(0, 0, 10, 5)
+
+    # Action button (PyQt5/6 compatible)
+    button_box = QDialogButtonBox()
+
+    # Compatibility shim for enum location (PyQt6 vs PyQt5)
+    try:
+        accept_role = QDialogButtonBox.ButtonRole.AcceptRole   # PyQt6
+    except AttributeError:
+        accept_role = QDialogButtonBox.AcceptRole              # PyQt5-style
+
+    start_button = button_box.addButton("Get Started", accept_role)
+    start_button.setStyleSheet(
+        "padding: 5px 15px; background-color: #007bff; color: white; border-radius: 5px; font-weight: bold;"
+    )
+    button_box.accepted.connect(dialog.accept)
+
+
+    # Add widgets to layout
+    vbox.addWidget(label)
+    vbox.addLayout(footer_layout)
+    vbox.addWidget(button_box)
+
+    # If the user closes the dialog, do not proceed with the setup
+    if not _dialog_exec(dialog):
+        return
+
 
     # Ask if user is from Mount Sinai
     is_mount_sinai = askUser("Are you from Mount Sinai institution?")
@@ -278,13 +358,19 @@ def config_dialog():
     layout.addWidget(help_label)
 
     # Buttons
-    button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+    try:
+        Std = QDialogButtonBox.StandardButton  # PyQt6
+    except AttributeError:
+        Std = QDialogButtonBox                 # PyQt5-compatible alias
+
+    button_box = QDialogButtonBox(Std.Ok | Std.Cancel)
     button_box.accepted.connect(dialog.accept)
     button_box.rejected.connect(dialog.reject)
     layout.addWidget(button_box)
 
+
     # Show dialog
-    if dialog.exec_():
+    if _dialog_exec(dialog):
         # Save settings
         config["google_form_url"] = url_input.text()
         config["hotkey"] = hotkey_input.text()

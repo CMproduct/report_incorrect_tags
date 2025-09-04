@@ -6,7 +6,7 @@ This Anki add-on allows users to quickly report cards with incorrect tags to a c
 
 - Link any Google Form to quickly report cards with incorrect tags
 - Configure your own custom hotkey
-- First-run setup wizard for easy configuration
+- A polished and professional first-run setup popup for a great first impression.
 - Works with any shared deck
 - Pre-fills the form with card details (deck name, tags, note ID)
 - Configuration dialog available in the Tools menu
@@ -82,6 +82,10 @@ It allows your students or users to easily report tagging errors, helping you im
 If you encounter any issues or have questions, please:
 - Submit an issue on [GitHub](https://github.com/CMproduct/report_incorrect_tags)
 - Contact the developer at caleb.massimi@icahn.mssm.edu
+
+## Author
+
+*   **Caleb Massimi**
 
 ## License
 
